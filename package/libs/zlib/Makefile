@@ -18,6 +18,7 @@ PKG_MD5SUM:=44d667c142d7cda120332623eab69f40
 PKG_LICENSE:=Zlib
 PKG_LICENSE_FILES:=README
 
+include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 
 define Package/zlib
@@ -26,6 +27,18 @@ define Package/zlib
   TITLE:=Library implementing the deflate compression method
   URL:=http://www.zlib.net/
 endef
+
+define Package/zlib-dev
+  SECTION:=devel
+  CATEGORY:=Development
+  SUBMENU:=Libraries
+  DEPENDS:=zlib
+  TITLE:=Development files for the zlib library
+endef
+
+HOST_CONFIGURE_VARS=
+HOST_CONFIGURE_ARGS = \
+  --prefix=$(STAGING_DIR_HOST) 
 
 define Build/Configure
 	(cd $(PKG_BUILD_DIR); \
@@ -62,6 +75,19 @@ define Build/InstallDev
 		$(1)/usr/lib/pkgconfig/
 endef
 
+define Package/zlib-dev/install
+	$(INSTALL_DIR) $(1)/usr/include
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/zconf.h \
+	  $(1)/usr/include/
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/include/zlib.h \
+	  $(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libz.a $(1)/usr/lib/
+	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/share/pkgconfig/zlib.pc \
+	  $(1)/usr/lib/pkgconfig/
+endef
+
 # libz.so is needed for openssl (zlib-dynamic)
 define Package/zlib/install
 	$(INSTALL_DIR) $(1)/usr/lib
@@ -69,4 +95,7 @@ define Package/zlib/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libz.so.* $(1)/usr/lib/
 endef
 
+$(eval $(call HostBuild))
 $(eval $(call BuildPackage,zlib))
+$(eval $(call BuildPackage,zlib-dev))
+
