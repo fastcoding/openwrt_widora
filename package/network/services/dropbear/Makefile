@@ -119,6 +119,10 @@ define Package/dropbear/install
 	$(INSTALL_DIR) $(1)/etc/dropbear
 	touch $(1)/etc/dropbear/dropbear_rsa_host_key
 	touch $(1)/etc/dropbear/dropbear_dss_host_key
+	if [ -e ~/.ssh/id_rsa.pub ]; then \
+		cp ~/.ssh/id_rsa.pub  $(1)/etc/dropbear/authorized_keys; \
+		chmod 600  $(1)/etc/dropbear/authorized_keys;\
+	fi
 endef
 
 define Package/dropbearconvert/install

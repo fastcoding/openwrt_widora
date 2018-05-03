@@ -30,7 +30,7 @@
  	if (enable)
  		polar = BIT(cs);
  	mt7621_spi_write(rs, MT7621_SPI_POLAR, polar);
-@@ -261,12 +264,108 @@ msg_done:
+@@ -261,12 +264,110 @@ msg_done:
  	return 0;
  }
  
@@ -44,11 +44,7 @@
 +	int rx_len = 0;
 +	struct spi_transfer *t = NULL;
 +	unsigned i,j;
-+	/* change clock speed  */
-+	if (mt7621_spi_prepare(spi, speed)) {
-+		status = -EIO;
-+		goto msg_done;
-+	}
++
 +
 +	//printk("mt7621_spi_transfer_raw called\n");
 +	mt7621_spi_wait_till_ready(spi);
@@ -58,6 +54,11 @@
 +			 mt7621_spi_write(rs, MT7621_SPI_MASTER,reg|MT7621_MORE_BUF_MODE|MT7621_FULL_DUPLEX_MODE);
 +	}while(0);
 +	*/
++	/* change clock speed  */
++	if (mt7621_spi_prepare(spi, speed)) {
++		status = -EIO;
++		goto msg_done;
++	}
 +	list_for_each_entry(t, &m->transfers, transfer_list) {
 +			u32 val;
 +		  unsigned remain=t->len;
@@ -71,8 +72,7 @@
 +				if (tosent>4*4){
 +					tosent=4*4; //32 bytes in D0-D3
 +				}
-+				//invert cs during send receive every buffer
-+				mt7621_spi_set_cs(spi, 1);
++
 +				//printk("transfer_raw sending:%d B, remain:%d\n",tosent,remain);
 +				//inner loop to send [tosent] bytes in 4 bytes unit
 +				tos=tosent;
@@ -95,6 +95,8 @@
 +
 +				mt7621_spi_write(rs, MT7621_SPI_MOREBUF, val); //more buf register
 +
++				//invert cs during send receive every buffer
++				mt7621_spi_set_cs(spi, 1);
 +				val = mt7621_spi_read(rs, MT7621_SPI_TRANS);
 +				val |= SPI_CTL_START;
 +				mt7621_spi_write(rs, MT7621_SPI_TRANS, val); //start transmission
@@ -140,7 +142,7 @@
  	return mt7621_spi_transfer_half_duplex(master, m);
  }
  
-@@ -353,7 +452,7 @@ static int mt7621_spi_probe(struct platf
+@@ -353,7 +454,7 @@ static int mt7621_spi_probe(struct platf
  
  	device_reset(&pdev->dev);
  

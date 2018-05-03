@@ -1029,6 +1029,8 @@ Image/Build/Profile/LinkIt7688=$(call BuildFirmware/Default32M/$(1),$(1),LinkIt7
 
 Image/Build/Profile/Widora=$(call BuildFirmware/Default16M/$(1),$(1),Widora,Widora)
 Image/Build/Profile/Widora32M=$(call BuildFirmware/Default32M/$(1),$(1),Widora32M,Widora32M)
+Image/Build/Profile/Widora16M=$(call BuildFirmware/Default16M/$(1),$(1),Widora16M,Widora16M)
+Image/Build/Profile/Lasermark=$(call BuildFirmware/Default16M/$(1),$(1),Lasermark,Lasermark)
 
 ifeq ($(SUBTARGET),mt7628)
 define Image/Build/Profile/Default
@@ -1036,6 +1038,7 @@ define Image/Build/Profile/Default
 	$(call Image/Build/Profile/LinkIt7688,$(1))
 	$(call Image/Build/Profile/Widora,$(1))
 	$(call Image/Build/Profile/Widora32M,$(1))
+	$(call Image/Build/Profile/Lasermark,$(1))
 endef
 endif
 
