@@ -19,7 +19,7 @@ config wifi-device	radio0
 	option variant	$devtype
 	option country	CN
 	option hwmode	$mode
-	option htmode	HT20
+	option htmode	HT40
 	option channel  auto
 	option disabled	0
 
@@ -36,7 +36,7 @@ config wifi-iface sta
 	option device   radio0
 	option disabled 1
 	option mode	sta
-	option network  wan
+	option network  wwan
 	option ifname   $sta
 	option ssid	UplinkAp
 	option key	SecretKey
@@ -48,7 +48,7 @@ detect_ralink() {
 
 	cpu=$(awk 'BEGIN{FS="[ \t]+: MediaTek[ \t]"} /system type/ {print $2}' /proc/cpuinfo | cut -d" " -f1)
 	case $cpu in
-	MT7688)
+	MT7688 | MT7628AN)
 		write_ralink mt_wifi mt7628 ra0 11bgn
 		;;
 	esac

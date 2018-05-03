@@ -1,34 +1,36 @@
-#### Hello everybody
-  * [Twitter:widora_io](https://twitter.com/widora_io/)
-  * TELEGRAM: https://t.me/widora
-#### how to check if connected to some AP? use ap_client command,check return is ok or no
+### 敬告某些国内厂家
+##### Widora发布的MT7688 WI-FI驱动因版权限制只能运行在NEO、BIT模组、集成BIT模组的产品上，在其他7688上运行属于侵权行为，侵权必究。
+
+### Hello everybody
+##### [Twitter:widoraIoT](https://twitter.com/widora_io/)
+##### TELEGRAM: https://t.me/widora
+##### QQ Group: 299381903
+##### https://widora.io   http://widora.cn
+
+### ethmode command
+| command |   status   |  
+|---|---|
+| ethmode l | only Port0,LAN |
+| ethmode w | only Port0,WAN |
+| ethmode wllll | Port0-Port4, Port0 is WAN,Port1-4 is LAN |
+| ethmode lllll | Port0-Port4,all is LAN |
+
+
+### wifimode command
+| command |   status   |  
+|---|---|
+| wifimode ap | only AP,LAN |
+| wifimode sta | only STA(apcli0),WAN |
+| wifimode apsta | AP+STA,AP is LAN,STA is WAN |
+
+### how to check if connected to some AP? use ap_client command,check return is ok or no
 ``` sh
 $ ap_client
 ```
 ok is connected
 no is not connected
-#### branch
-master:the default firmware,only port0
 
-wllll:port0 is WAN, port1-port4 is LAN
-
-nojffs2: fix the Small probability file system crashes,wait to merge master
-
-#### set the board mode.
-```sh
-$ widora_mode
-```
-| MODE |   REPEATER     |  CLIENT  | ROUTER PPPOE |
-|---|---|---|---|
-LAN  | eth0 ap apcli0 | eth0  ap | ap           |
-WAN  |                | apcli0   | eth0         |
-```sh
-"widora_mode repeater" or "widora_mode repeater ssid key"
-"widora_mode client" or "widora_mode client ssid key"
-"widora_mode router"
-"widora_mode pppoe" or "widora_mode pppoe name key"
-```
-## How to compile?
+### How to compile?
 # 1.install depend
 ## Ubuntu14.04
 $ sudo apt-get update
@@ -56,12 +58,16 @@ Target System(Ralink RT288x/RT3xxx) --->
 
 Subtarget(MT7688 based board) --->
 
-Target Profile(Widora) --->
+Target Profile(WIDORA16128) --->
 
 ## note
-Widora:16MB FLASH + 128MB RAM
+WIDORA16128:16MB FLASH + 128MB RAM
 
-Widora32M:32MB FLASH + 128MB RAM
+WIDORA32128:32MB FLASH + 128MB RAM
+
+WIDORA1664:16MB FLASH + 64MB RAM
+
+WIDORA3264:32MB FLASH + 64MB RAM
 
 # 5.make
 $ make -j4

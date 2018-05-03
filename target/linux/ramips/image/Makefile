@@ -1027,18 +1027,32 @@ endif
 Image/Build/Profile/MT7688=$(call BuildFirmware/Default4M/$(1),$(1),mt7628,MT7628)
 Image/Build/Profile/LinkIt7688=$(call BuildFirmware/Default32M/$(1),$(1),LinkIt7688,LINKIT7688)
 
+<<<<<<< HEAD
 Image/Build/Profile/Widora=$(call BuildFirmware/Default16M/$(1),$(1),Widora,Widora)
 Image/Build/Profile/Widora32M=$(call BuildFirmware/Default32M/$(1),$(1),Widora32M,Widora32M)
 Image/Build/Profile/Widora16M=$(call BuildFirmware/Default16M/$(1),$(1),Widora16M,Widora16M)
 Image/Build/Profile/Lasermark=$(call BuildFirmware/Default16M/$(1),$(1),Lasermark,Lasermark)
+=======
+Image/Build/Profile/WIDORA16128=$(call BuildFirmware/Default16M/$(1),$(1),WIDORA16128,WIDORA16128)
+Image/Build/Profile/WIDORA32128=$(call BuildFirmware/Default32M/$(1),$(1),WIDORA32128,WIDORA32128)
+Image/Build/Profile/WIDORA1664=$(call BuildFirmware/Default16M/$(1),$(1),WIDORA1664,WIDORA1664)
+Image/Build/Profile/WIDORA3264=$(call BuildFirmware/Default32M/$(1),$(1),WIDORA3264,WIDORA3264)
+>>>>>>> c3b74852c725a30eb881a66ed0416a33a29298e1
 
 ifeq ($(SUBTARGET),mt7628)
 define Image/Build/Profile/Default
 	$(call Image/Build/Profile/MT7688,$(1))
 	$(call Image/Build/Profile/LinkIt7688,$(1))
+<<<<<<< HEAD
 	$(call Image/Build/Profile/Widora,$(1))
 	$(call Image/Build/Profile/Widora32M,$(1))
 	$(call Image/Build/Profile/Lasermark,$(1))
+=======
+	$(call Image/Build/Profile/WIDORA16128,$(1))
+	$(call Image/Build/Profile/WIDORA32128,$(1))
+	$(call Image/Build/Profile/WIDORA1664,$(1))
+	$(call Image/Build/Profile/WIDORA3264,$(1))
+>>>>>>> c3b74852c725a30eb881a66ed0416a33a29298e1
 endef
 endif
 

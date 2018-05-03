@@ -5,17 +5,17 @@
 # See /LICENSE for more information.
 #
 
-define Profile/Widora32M
-	NAME:=Widora32M
+define Profile/WIDORA16128
+	NAME:=WIDORA16128
 	PACKAGES:=\
 		kmod-usb-core kmod-usb2 kmod-usb-ohci \
-		uboot-envtools kmod-ledtrig-netdev \
+		kmod-ledtrig-netdev \
   		mountd \
         	mjpg-streamer \
 		uhttpd rpcd rpcd-mod-iwinfo \
 		rpcd-mod-rpcsys cgi-io spi-tools \
 		kmod-fs-vfat kmod-fs-exfat kmod-fs-ext4 block-mount e2fsprogs \
-		kmod-i2c-core kmod-i2c-ralink \
+		kmod-i2c-core kmod-i2c-mt7621 \
 		kmod-nls-base kmod-nls-cp437 kmod-nls-iso8859-1 kmod-nls-utf8 \
 		kmod-sdhci-mt7620 kmod-usb-storage \
 		kmod-video-core kmod-video-uvc \
@@ -24,7 +24,7 @@ define Profile/Widora32M
         	maccalc shairport_mmap reg ser2net
 endef
 
-define Profile/Widora32M/Description
-	widora 32MB flash/128MB ram base packages.
+define Profile/WIDORA16128/Description
+	widora 16MB flash/128MB ram base packages.
 endef
-$(eval $(call Profile,Widora32M))
+$(eval $(call Profile,WIDORA16128))
