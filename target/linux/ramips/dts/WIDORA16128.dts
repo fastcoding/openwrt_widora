@@ -61,6 +61,10 @@
 				ralink,group = "wdt";
 				ralink,function = "gpio";
 			};
+			uart1{
+				ralink,group = "uart1";
+				ralink,function = "gpio";
+			};
 		};
 	};
 
@@ -112,10 +116,6 @@
 		};
 
 		i2c@900 {
-			status = "okay";
-		};
-
-		uart1@d00 {
 			status = "okay";
 		};
 
