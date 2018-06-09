@@ -1,3 +1,11 @@
 ::sysinit:/etc/init.d/rcS S boot
 ::shutdown:/etc/init.d/rcS K shutdown
+<<<<<<< HEAD
 ::askconsole:/bin/login
+=======
+tts/0::askfirst:/usr/libexec/login.sh
+ttyS0::askfirst:/usr/libexec/login.sh
+ttyS1::askfirst:/usr/libexec/login.sh
+ttyS2::askfirst:/usr/libexec/login.sh
+tty1::askfirst:/usr/libexec/login.sh
+>>>>>>> 5971458e6753f1200c6fd6295c9f62d3d4b73dd0
