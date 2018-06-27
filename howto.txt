@@ -1,0 +1,3 @@
+how to build linux only
+make target/linux/{clean,compile} V=99
+make target/linux/<platform>/compile V=99
