@@ -7,7 +7,7 @@ USE_PROCD=1
 validate_system_section()
 {
 	uci_validate_section system system "${1}" \
-		'hostname:string:OpenWrt' \
+		'hostname:string:lasermark' \
 		'conloglevel:uinteger' \
 		'buffersize:uinteger' \
 		'timezone:string:UTC' \
@@ -24,7 +24,8 @@ system_config() {
 		return 1
 	}
 
-	echo "$hostname" > /proc/sys/kernel/hostname
+  last4=$(cat /sys/class/net/eth0/address|sed 's/\://g;s/^.\+\(....\)$/\1/g')
+	echo "${hostname}_$last4" > /proc/sys/kernel/hostname
 	[ -z "$conloglevel" -a -z "$buffersize" ] || dmesg ${conloglevel:+-n $conloglevel} ${buffersize:+-s $buffersize}
 	echo "$timezone" > /tmp/TZ
 	[ -n "$zonename" ] && [ -f "/usr/share/zoneinfo/$zonename" ] && ln -s "/usr/share/zoneinfo/$zonename" /tmp/localtime
