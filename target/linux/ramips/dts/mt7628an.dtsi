@@ -32,17 +32,15 @@
 			reg = <0x0 0x100>;
 		};
 
-		watchdog@120 {
+		watchdog@100 {
 			compatible = "ralink,mt7628an-wdt", "mtk,mt7621-wdt";
-			reg = <0x120 0x10>;
+			reg = <0x100 0x30>;
 
 			resets = <&rstctrl 8>;
 			reset-names = "wdt";
 
 			interrupt-parent = <&intc>;
-			interrupts = <24>;
-				
-			status = "disabled";
+			interrupts = <24>;			
 		};
 
 		intc: intc@200 {
