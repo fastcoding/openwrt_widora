@@ -1,0 +1,153 @@
+--- a/drivers/spi/spi-mt7621.c
++++ b/drivers/spi/spi-mt7621.c
+@@ -85,13 +85,17 @@ static inline void mt7621_spi_write(stru
+ 	iowrite32(val, rs->base + reg);
+ }
+ 
+-static void mt7621_spi_reset(struct mt7621_spi *rs)
++static void mt7621_spi_reset(struct mt7621_spi *rs, int duplex)
+ {
+ 	u32 master = mt7621_spi_read(rs, MT7621_SPI_MASTER);
+ 
+ 	master |= 7 << 29;
+ 	master |= 1 << 2;
+-	master &= ~(1 << 10);
++	if (duplex)
++		master |= 1 << 10;  //full duplex mode on
++	else
++		master &= ~(1 << 10);//half duplex mode off
++	//master &= ~(1 << 10);
+ 
+ 	mt7621_spi_write(rs, MT7621_SPI_MASTER, master);
+ }
+@@ -101,8 +105,7 @@ static void mt7621_spi_set_cs(struct spi
+ 	struct mt7621_spi *rs = spidev_to_mt7621_spi(spi);
+ 	int cs = spi->chip_select;
+ 	u32 polar = 0;
+-
+-        mt7621_spi_reset(rs);
++  mt7621_spi_reset(rs,cs);
+ 	if (enable)
+ 		polar = BIT(cs);
+ 	mt7621_spi_write(rs, MT7621_SPI_POLAR, polar);
+@@ -261,12 +264,110 @@ msg_done:
+ 	return 0;
+ }
+ 
++static int mt7621_spi_transfer_raw(struct spi_master *master,
++					   struct spi_message *m)
++{
++	struct mt7621_spi *rs = spi_master_get_devdata(master);
++	struct spi_device *spi = m->spi;
++	unsigned int speed = spi->max_speed_hz;
++	int status = 0;
++	int rx_len = 0;
++	struct spi_transfer *t = NULL;
++	unsigned i,j;
++
++
++	//printk("mt7621_spi_transfer_raw called\n");
++	mt7621_spi_wait_till_ready(spi);
++	/*do {
++		u32 reg = mt7621_spi_read(rs, MT7621_SPI_MASTER);
++		if (0==(reg & MT7621_MORE_BUF_MODE)||0==(reg & MT7621_FULL_DUPLEX_MODE))
++			 mt7621_spi_write(rs, MT7621_SPI_MASTER,reg|MT7621_MORE_BUF_MODE|MT7621_FULL_DUPLEX_MODE);
++	}while(0);
++	*/
++	/* change clock speed  */
++	if (mt7621_spi_prepare(spi, speed)) {
++		status = -EIO;
++		goto msg_done;
++	}
++	list_for_each_entry(t, &m->transfers, transfer_list) {
++			u32 val;
++		  unsigned remain=t->len;
++			const u8 *pb = t->tx_buf;
++			u8 *pc = t->rx_buf;
++
++			//printk("transfer_raw buf-len=%d,txbuf:%p,rxbuf:%p\n",remain,pb,pc);
++			while(remain>0){
++				unsigned tosent=remain;
++				unsigned tos,idx;
++				if (tosent>4*4){
++					tosent=4*4; //32 bytes in D0-D3
++				}
++
++				//printk("transfer_raw sending:%d B, remain:%d\n",tosent,remain);
++				//inner loop to send [tosent] bytes in 4 bytes unit
++				tos=tosent;
++				idx=0;
++				while(tos>0){
++					  u32 data=0;
++						u8* pd=(u8*)&data;
++						u8 u=tos;
++						if (u>4)u=4;
++						for(j=0;j<u;j++){
++								*pd++=*pb++; //copy into data
++						}
++						mt7621_spi_write(rs, MT7621_SPI_DATA0 + idx*4, data);
++						tos-=u;
++						idx++;
++				}
++
++				val = tosent * 8;// low  - tx*8 bits mosi_cnt_bits
++				val |= (tosent * 8) << 12; //left shift 12 bits -> rx*8 miso_cnt_bits
++
++				mt7621_spi_write(rs, MT7621_SPI_MOREBUF, val); //more buf register
++
++				//invert cs during send receive every buffer
++				mt7621_spi_set_cs(spi, 1);
++				val = mt7621_spi_read(rs, MT7621_SPI_TRANS);
++				val |= SPI_CTL_START;
++				mt7621_spi_write(rs, MT7621_SPI_TRANS, val); //start transmission
++				mt7621_spi_wait_till_ready(spi); //wait until done
++				mt7621_spi_set_cs(spi, 0);
++				if (pc){
++					  //printk("transfer_raw receiving:%d B\n",tosent);
++						for (i = 0; i < (tosent+3)/4; i++){
++							//every four bytes each
++						  u32 data=mt7621_spi_read(rs, MT7621_SPI_DATA4 + i*4);//16 bytes in D4-D7
++						  int rest;
++						  rest=tosent-i*4;
++							u8 *pd=(u8*)&data;
++							if (rest>4) rest=4;
++							for( j=0;j<rest;j++){
++									*(pc+j+4*i)=*pd++; //copy into receive buffer
++							}
++							rx_len+=rest;
++						}
++						pc+=tosent;
++				}
++				remain-=tosent;
++			}//end while
++		}
++
++		m->actual_length = rx_len;
++msg_done:
++	m->status = status;
++	spi_finalize_current_message(master);
++	return 0;
++}
++
+ static int mt7621_spi_transfer_one_message(struct spi_master *master,
+ 					   struct spi_message *m)
+ {
+ 	struct spi_device *spi = m->spi;
+ 	int cs = spi->chip_select;
+-
++	if (cs){
++		//return mt7621_spi_transfer_full_duplex(master, m);
++		return mt7621_spi_transfer_raw(master,m);
++	}
+ 	return mt7621_spi_transfer_half_duplex(master, m);
+ }
+ 
+@@ -353,7 +454,7 @@ static int mt7621_spi_probe(struct platf
+ 
+ 	device_reset(&pdev->dev);
+ 
+-	mt7621_spi_reset(rs);
++	mt7621_spi_reset(rs,0);
+ 
+ 	return spi_register_master(master);
+ }

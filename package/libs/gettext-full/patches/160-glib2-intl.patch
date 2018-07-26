@@ -1,0 +1,22 @@
+--- a/gettext-tools/gnulib-m4/libglib.m4
++++ b/gettext-tools/gnulib-m4/libglib.m4
+@@ -85,7 +85,7 @@ error this glib.h includes a glibconfig.
+     AC_MSG_RESULT([$gl_cv_libglib])
+     if test $gl_cv_libglib = yes; then
+       LIBGLIB="$gl_cv_LIBGLIB"
+-      LTLIBGLIB="$gl_cv_LTLIBGLIB"
++      LTLIBGLIB=`echo "$gl_cv_LTLIBGLIB" | sed -e 's/ -lintl / /' `
+       INCGLIB="$gl_cv_INCGLIB"
+     else
+       gl_cv_libglib_use_included=yes
+--- a/gnulib-local/m4/libglib.m4
++++ b/gnulib-local/m4/libglib.m4
+@@ -85,7 +85,7 @@ error this glib.h includes a glibconfig.
+     AC_MSG_RESULT([$gl_cv_libglib])
+     if test $gl_cv_libglib = yes; then
+       LIBGLIB="$gl_cv_LIBGLIB"
+-      LTLIBGLIB="$gl_cv_LTLIBGLIB"
++      LTLIBGLIB=`echo "$gl_cv_LTLIBGLIB" | sed -e 's/ -lintl / /' `
+       INCGLIB="$gl_cv_INCGLIB"
+     else
+       gl_cv_libglib_use_included=yes
