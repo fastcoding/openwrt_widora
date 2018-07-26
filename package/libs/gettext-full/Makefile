@@ -56,7 +56,22 @@ CONFIGURE_ARGS += \
 	--without-libexpat-prefix \
 	--without-emacs
 
+
+HOST_CONFIGURE_VARS += \
+	EMACS="no" \
+	am_cv_lib_iconv=no \
+	am_cv_func_iconv=no \
+	ac_cv_header_iconv_h=no 
+
 HOST_CONFIGURE_ARGS += \
+	--disable-shared \
+	--enable-static \
+	--disable-libasprintf \
+	--disable-rpath \
+	--disable-java \
+	--disable-native-java \
+	--disable-openmp \
+	--without-emacs \
 	--with-included-libxml --without-libxml2-prefix --with-included-libcroco
 
 define Build/InstallDev
